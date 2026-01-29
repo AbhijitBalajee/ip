@@ -1,12 +1,21 @@
 public class Abs {
     public static void main(String[] args) {
-        String logo = " ____        _        \n"
-                + "|  _ \\ _   _| | _____ \n"
-                + "| | | | | | | |/ / _ \\\n"
-                + "| |_| | |_| |   <  __/\n"
-                + "|____/ \\__,_|_|\\_\\___|\n";
+        String separator = "----------------------------------------------";
+        String logo = "  █████╗ ██████╗ ███████╗\n"
+                + " ██╔══██╗██╔══██╗██╔════╝\n"
+                + " ███████║██████╔╝███████╗\n"
+                + " ██╔══██║██╔══██╗╚════██║\n"
+                + " ██║  ██║██████╔╝███████║\n"
+                + " ╚═╝  ╚═╝╚═════╝ ╚══════╝\n";
 
-        String separator = indent + "--------------------------------------";
-        System.out.println("Hello from\n" + logo);
+        System.out.println(separator);
+        System.out.println(logo);
+        System.out.println("Hellooo! I'm Abs!");
+        System.out.println("What can I do for you?");
+        System.out.println(separator);
+
+        System.out.println("Byeee! Hope to see you again realll sooooonnn!");
+        System.out.println(separator);
+
     }
 }
