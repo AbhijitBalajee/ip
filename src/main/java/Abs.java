@@ -11,6 +11,9 @@ public class Abs {
                     + indent + " ██║  ██║██████╔╝███████║\n"
                     + indent + " ╚═╝  ╚═╝╚═════╝ ╚══════╝\n";
 
+        String[] tasks = new String[100];
+        int taskCount = 0;
+
         System.out.println(separator);
         System.out.println(logo);
         System.out.println(indent + "Hellooo! I'm Abs!");
@@ -22,13 +25,25 @@ public class Abs {
 
         while (!input.equals("bye")) {
             System.out.println(separator);
-            System.out.println(indent + input);
+
+            if (input.equals("list")) {
+
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println(indent + (i + 1) + ". " + tasks[i]);
+                }
+            } else {
+
+                tasks[taskCount] = input;
+                taskCount++;
+                System.out.println(indent + "added: " + input);
+            }
+
             System.out.println(separator);
             input = scanner.nextLine();
         }
 
         System.out.println(separator);
-        System.out.println(indent + "Byeee. Hope to see you again realll soonnn!");
+        System.out.println(indent + "Byeee! Hope to see you again realll soonnn!");
         System.out.println(separator);
     }
 }
