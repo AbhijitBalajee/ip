@@ -1,9 +1,11 @@
 public class TaskList {
+    private static final int DEFAULT_CAPACITY = 100;
+
     private Task[] tasks;
     private int taskCount;
 
     public TaskList() {
-        this.tasks = new Task[100];
+        this.tasks = new Task[DEFAULT_CAPACITY];
         this.taskCount = 0;
     }
 
@@ -29,11 +31,26 @@ public class TaskList {
             return indent + "There are no tasks in the list!";
         }
 
+        return buildTaskListString(indent);
+    }
+
+    private String buildTaskListString(String indent) {
         StringBuilder result = new StringBuilder();
         result.append(indent).append("Here are the tasks in your list:");
+
         for (int i = 0; i < taskCount; i++) {
-            result.append("\n").append(indent).append(i + 1).append(".").append(tasks[i]);
+            appendTaskToList(result, indent, i);
         }
+
         return result.toString();
+    }
+
+    private void appendTaskToList(StringBuilder result, String indent, int index) {
+        int displayNumber = index + 1;
+        result.append("\n")
+                .append(indent)
+                .append(displayNumber)
+                .append(".")
+                .append(tasks[index]);
     }
 }
