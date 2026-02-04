@@ -48,11 +48,37 @@ public class Abs {
                 tasks[taskNumber - 1].markAsNotDone();
                 System.out.println(indent + "OK, I've marked this task as not done yet:");
                 System.out.println(indent + "  " + tasks[taskNumber - 1]);
-            } else {
-                Task newTask = new Task(input);
+            } else if (input.startsWith("todo ")) {
+                String description = input.substring(5);
+                Task newTask = new Todo(description);
                 tasks[taskCount] = newTask;
                 taskCount++;
-                System.out.println(indent + "added: " + input);
+                System.out.println(indent + "Got it. I've added this task:");
+                System.out.println(indent + "  " + newTask);
+                System.out.println(indent + "Now you have " + taskCount + " tasks in the list.");
+            } else if (input.startsWith("deadline ")) {
+                String[] parts = input.substring(9).split(" /by ");
+                String description = parts[0];
+                String by = parts[1];
+                Task newTask = new Deadline(description, by);
+                tasks[taskCount] = newTask;
+                taskCount++;
+                System.out.println(indent + "Got it. I've added this task:");
+                System.out.println(indent + "  " + newTask);
+                System.out.println(indent + "Now you have " + taskCount + " tasks in the list.");
+            } else if (input.startsWith("event ")) {
+                String[] parts = input.substring(6).split(" /from | /to ");
+                String description = parts[0];
+                String from = parts[1];
+                String to = parts[2];
+                Task newTask = new Event(description, from, to);
+                tasks[taskCount] = newTask;
+                taskCount++;
+                System.out.println(indent + "Got it. I've added this task:");
+                System.out.println(indent + "  " + newTask);
+                System.out.println(indent + "Now you have " + taskCount + " tasks in the list.");
+            } else {
+                System.out.println(indent + "I don't understand that command!");
             }
 
             System.out.println(separator);
