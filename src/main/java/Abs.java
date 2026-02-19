@@ -21,12 +21,14 @@ public class Abs {
     private static final String COMMAND_PREFIX_TODO = "todo ";
     private static final String COMMAND_PREFIX_DEADLINE = "deadline ";
     private static final String COMMAND_PREFIX_EVENT = "event ";
+    private static final String COMMAND_PREFIX_DELETE = "delete ";
 
     private static final int MARK_PREFIX_LENGTH = 5;
     private static final int UNMARK_PREFIX_LENGTH = 7;
     private static final int TODO_PREFIX_LENGTH = 5;
     private static final int DEADLINE_PREFIX_LENGTH = 9;
     private static final int EVENT_PREFIX_LENGTH = 6;
+    private static final int DELETE_PREFIX_LENGTH = 7;
 
     private TaskList taskList;
     private Scanner scanner;
@@ -116,7 +118,8 @@ public class Abs {
             handleMarkCommand(input);
         } else if (input.startsWith(COMMAND_PREFIX_UNMARK)) {
             handleUnmarkCommand(input);
-
+        } else if (input.startsWith(COMMAND_PREFIX_DELETE)) {
+            handleDeleteCommand(input);
         } else if (input.startsWith(COMMAND_PREFIX_TODO)) {
             handleTodoCommand(input);
         } else if (input.startsWith(COMMAND_PREFIX_DEADLINE)) {
@@ -156,6 +159,11 @@ public class Abs {
                 throw new AbsException("There is nothing on the list to unmark " + userName + "!");
             }
             throw new AbsException("Which task " + userName + "? Remember to put a number after unmark!");
+        } else if (input.equals("delete")) {
+            if (taskList.isEmpty()) {
+                throw new AbsException("There is nothing on the list to delete " + userName + "!");
+            }
+            throw new AbsException("Which task " + userName + "? Remember to put a number after delete!");
         }
     }
 
@@ -218,6 +226,43 @@ public class Abs {
         } catch (StringIndexOutOfBoundsException e) {
             throw new AbsException("Which task " + userName + "? Remember to put a number after unmark!");
         }
+    }
+
+    /**
+     * Handles the delete command to remove a task from the list.
+     *
+     * @param input User command containing task number to delete
+     * @throws AbsException If task number is invalid or list is empty
+     */
+    private void handleDeleteCommand(String input) throws AbsException {
+        if (taskList.isEmpty()) {
+            throw new AbsException("There is nothing on the list to delete " + userName + "!");
+        }
+
+        try {
+            int taskNumber = parseTaskNumber(input, DELETE_PREFIX_LENGTH);
+            if (taskNumber < 1 || taskNumber > taskList.getTaskCount()) {
+                throw new AbsException("Oops " + userName + "! Task number " + taskNumber
+                        + " doesn't exist in your list!");
+            }
+            Task deletedTask = taskList.deleteTask(taskNumber - 1);
+            printTaskDeleted(deletedTask);
+        } catch (NumberFormatException e) {
+            throw new AbsException("Hey " + userName + "! Please give me a valid task number to delete!");
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new AbsException("Which task " + userName + "? Remember to put a number after delete!");
+        }
+    }
+
+    /**
+     * Displays confirmation message for deleting a task.
+     *
+     * @param task Task that was deleted
+     */
+    private void printTaskDeleted(Task task) {
+        System.out.println(INDENT + "Noted. I've removed this task:");
+        System.out.println(INDENT + "  " + task);
+        System.out.println(INDENT + "Now you have " + taskList.getTaskCount() + " tasks in the list.");
     }
 
     /**

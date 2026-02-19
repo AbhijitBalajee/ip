@@ -1,21 +1,17 @@
+import java.util.ArrayList;
+
 /**
- * Manages a collection of tasks with a fixed maximum capacity.
+ * Manages a collection of tasks using an ArrayList.
  */
 public class TaskList {
-    /** Default maximum number of tasks that can be stored */
-    private static final int DEFAULT_CAPACITY = 100;
-
-    /** Array storing the tasks */
-    private Task[] tasks;
-    /** Current number of tasks in the list */
-    private int taskCount;
+    /** List storing all tasks */
+    private ArrayList<Task> tasks;
 
     /**
-     * Constructs an empty task list with default capacity.
+     * Constructs an empty task list.
      */
     public TaskList() {
-        this.tasks = new Task[DEFAULT_CAPACITY];
-        this.taskCount = 0;
+        this.tasks = new ArrayList<>();
     }
 
     /**
@@ -24,8 +20,7 @@ public class TaskList {
      * @param task Task to be added
      */
     public void addTask(Task task) {
-        tasks[taskCount] = task;
-        taskCount++;
+        tasks.add(task);
     }
 
     /**
@@ -35,7 +30,17 @@ public class TaskList {
      * @return Task at the specified index
      */
     public Task getTask(int index) {
-        return tasks[index];
+        return tasks.get(index);
+    }
+
+    /**
+     * Deletes a task at the specified index.
+     *
+     * @param index Index of the task to delete (0-based)
+     * @return The deleted task
+     */
+    public Task deleteTask(int index) {
+        return tasks.remove(index);
     }
 
     /**
@@ -44,7 +49,7 @@ public class TaskList {
      * @return Number of tasks currently stored
      */
     public int getTaskCount() {
-        return taskCount;
+        return tasks.size();
     }
 
     /**
@@ -53,7 +58,7 @@ public class TaskList {
      * @return true if list contains no tasks, false otherwise
      */
     public boolean isEmpty() {
-        return taskCount == 0;
+        return tasks.isEmpty();
     }
 
     /**
@@ -80,7 +85,7 @@ public class TaskList {
         StringBuilder result = new StringBuilder();
         result.append(indent).append("Here are the tasks in your list:");
 
-        for (int i = 0; i < taskCount; i++) {
+        for (int i = 0; i < tasks.size(); i++) {
             appendTaskToList(result, indent, i);
         }
 
@@ -100,6 +105,6 @@ public class TaskList {
                 .append(indent)
                 .append(displayNumber)
                 .append(".")
-                .append(tasks[index]);
+                .append(tasks.get(index));
     }
 }
