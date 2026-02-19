@@ -24,7 +24,6 @@ public class Abs {
     private static final String COMMAND_PREFIX_DEADLINE = "deadline ";
     private static final String COMMAND_PREFIX_EVENT = "event ";
     private static final String COMMAND_PREFIX_DELETE = "delete ";
-    private static final String COMMAND_PREFIX_DELETE = "delete ";
     private static final String COMMAND_PREFIX_FIND = "find ";
     private static final String DATA_FILE_PATH = Paths.get("data", "abs.txt").toString();
 
@@ -35,10 +34,7 @@ public class Abs {
     private static final int DEADLINE_PREFIX_LENGTH = 9;
     private static final int EVENT_PREFIX_LENGTH = 6;
     private static final int DELETE_PREFIX_LENGTH = 7;
-    private static final int DELETE_PREFIX_LENGTH = 7;
     private static final int FIND_PREFIX_LENGTH = 5;
-
-    private static final String DATA_FILE_PATH = "./data/abs.txt";
 
     private Storage storage;
     private TaskList taskList;
@@ -156,7 +152,7 @@ public class Abs {
             handleEventCommand(input);
 
         } else if (input.equals("todo") || input.equals("deadline") || input.equals("event")
-                || input.equals("mark") || input.equals("unmark")) {
+            || input.equals("mark") || input.equals("unmark") || input.equals("delete")) {
             handleCommandWithoutArguments(input);
 
         } else {

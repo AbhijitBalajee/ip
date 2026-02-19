@@ -3,27 +3,21 @@ import java.util.ArrayList;
 /**
  * Manages a collection of tasks using an ArrayList.
  * Notifies storage when tasks are modified.
- * Manages a collection of tasks using an ArrayList.
  */
 public class TaskList {
     /** List storing all tasks */
     private ArrayList<Task> tasks;
     /** Storage handler for saving tasks */
     private Storage storage;
-    /** List storing all tasks */
-    private ArrayList<Task> tasks;
 
     /**
      * Constructs an empty task list.
      *
      * @param storage Storage handler for saving tasks
-     * Constructs an empty task list.
      */
     public TaskList(Storage storage) {
         this.tasks = new ArrayList<>();
         this.storage = storage;
-    public TaskList() {
-        this.tasks = new ArrayList<>();
     }
 
     /**
@@ -34,7 +28,6 @@ public class TaskList {
     public void addTask(Task task) {
         tasks.add(task);
         saveToStorage();
-        tasks.add(task);
     }
 
     /**
@@ -77,17 +70,6 @@ public class TaskList {
     public void markTaskAsNotDone(Task task) {
         task.markAsNotDone();
         saveToStorage();
-        return tasks.get(index);
-    }
-
-    /**
-     * Deletes a task at the specified index.
-     *
-     * @param index Index of the task to delete (0-based)
-     * @return The deleted task
-     */
-    public Task deleteTask(int index) {
-        return tasks.remove(index);
     }
 
     /**
@@ -115,7 +97,6 @@ public class TaskList {
      */
     public void loadTasks() throws StorageException {
         this.tasks = storage.load();
-        return tasks.isEmpty();
     }
 
     /**
@@ -204,6 +185,5 @@ public class TaskList {
         } catch (StorageException e) {
             System.out.println("    Error saving tasks: " + e.getMessage());
         }
-                .append(tasks.get(index));
     }
 }
