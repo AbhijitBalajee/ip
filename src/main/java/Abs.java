@@ -1,8 +1,10 @@
 import java.util.Scanner;
+import java.nio.file.Paths;
 
 /**
  * Main chatbot application that manages a task list.
  * Handles user commands for adding, listing, marking, and unmarking tasks.
+ * Automatically saves and loads tasks from file.
  */
 public class Abs {
     private static final String INDENT = "    ";
@@ -21,23 +23,33 @@ public class Abs {
     private static final String COMMAND_PREFIX_TODO = "todo ";
     private static final String COMMAND_PREFIX_DEADLINE = "deadline ";
     private static final String COMMAND_PREFIX_EVENT = "event ";
+    private static final String COMMAND_PREFIX_DELETE = "delete ";
+    private static final String COMMAND_PREFIX_FIND = "find ";
+    private static final String DATA_FILE_PATH = Paths.get("data", "abs.txt").toString();
+
 
     private static final int MARK_PREFIX_LENGTH = 5;
     private static final int UNMARK_PREFIX_LENGTH = 7;
     private static final int TODO_PREFIX_LENGTH = 5;
     private static final int DEADLINE_PREFIX_LENGTH = 9;
     private static final int EVENT_PREFIX_LENGTH = 6;
+    private static final int DELETE_PREFIX_LENGTH = 7;
+    private static final int FIND_PREFIX_LENGTH = 5;
 
+    private static final String DATA_FILE_PATH = "./data/abs.txt";
+
+    private Storage storage;
     private TaskList taskList;
     private Scanner scanner;
     private String userName;
 
     /**
      * Constructs a new Abs chatbot instance.
-     * Initializes the task list and scanner for user input.
+     * Initializes storage, task list, and scanner for user input.
      */
     public Abs() {
-        this.taskList = new TaskList();
+        this.storage = new Storage(DATA_FILE_PATH);
+        this.taskList = new TaskList(storage);
         this.scanner = new Scanner(System.in);
     }
 
@@ -53,13 +65,29 @@ public class Abs {
 
     /**
      * Runs the main chatbot loop.
-     * Greets user, gets their name, processes commands, and says goodbye.
+     * Loads tasks, greets user, gets their name, processes commands, and says goodbye.
      */
     public void run() {
+        loadTasks();
         greetUser();
         getUserName();
         handleUserCommands();
         sayGoodbye();
+    }
+
+    /**
+     * Loads tasks from storage.
+     * Displays error message if loading fails.
+     */
+    private void loadTasks() {
+        try {
+            taskList.loadTasks();
+        } catch (StorageException e) {
+            printSeparator();
+            System.out.println(INDENT + "Error loading tasks: " + e.getMessage());
+            System.out.println(INDENT + "Starting with an empty task list.");
+            printSeparator();
+        }
     }
 
     /**
@@ -184,7 +212,7 @@ public class Abs {
                         + " doesn't exist in your list!");
             }
             Task task = taskList.getTask(taskNumber - 1);
-            task.markAsDone();
+            taskList.markTaskAsDone(task);  // Changed this line
             printTaskMarkedAsDone(task);
         } catch (NumberFormatException e) {
             throw new AbsException("Hey " + userName + "! Please give me a valid task number to mark!");
@@ -211,7 +239,7 @@ public class Abs {
                         + " doesn't exist in your list!");
             }
             Task task = taskList.getTask(taskNumber - 1);
-            task.markAsNotDone();
+            taskList.markTaskAsNotDone(task);  // Changed this line
             printTaskMarkedAsNotDone(task);
         } catch (NumberFormatException e) {
             throw new AbsException("Hey " + userName + "! Please give me a valid task number to unmark!");

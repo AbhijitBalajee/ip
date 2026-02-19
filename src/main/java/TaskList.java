@@ -1,31 +1,33 @@
+import java.util.ArrayList;
+
 /**
- * Manages a collection of tasks with a fixed maximum capacity.
+ * Manages a collection of tasks using an ArrayList.
+ * Notifies storage when tasks are modified.
  */
 public class TaskList {
-    /** Default maximum number of tasks that can be stored */
-    private static final int DEFAULT_CAPACITY = 100;
-
-    /** Array storing the tasks */
-    private Task[] tasks;
-    /** Current number of tasks in the list */
-    private int taskCount;
+    /** List storing all tasks */
+    private ArrayList<Task> tasks;
+    /** Storage handler for saving tasks */
+    private Storage storage;
 
     /**
-     * Constructs an empty task list with default capacity.
+     * Constructs an empty task list.
+     *
+     * @param storage Storage handler for saving tasks
      */
-    public TaskList() {
-        this.tasks = new Task[DEFAULT_CAPACITY];
-        this.taskCount = 0;
+    public TaskList(Storage storage) {
+        this.tasks = new ArrayList<>();
+        this.storage = storage;
     }
 
     /**
-     * Adds a task to the list.
+     * Adds a task to the list and saves to storage.
      *
      * @param task Task to be added
      */
     public void addTask(Task task) {
-        tasks[taskCount] = task;
-        taskCount++;
+        tasks.add(task);
+        saveToStorage();
     }
 
     /**
@@ -35,7 +37,39 @@ public class TaskList {
      * @return Task at the specified index
      */
     public Task getTask(int index) {
-        return tasks[index];
+        return tasks.get(index);
+    }
+
+    /**
+     * Deletes a task at the specified index and saves to storage.
+     *
+     * @param index Index of the task to delete (0-based)
+     * @return The deleted task
+     */
+    public Task deleteTask(int index) {
+        Task deletedTask = tasks.remove(index);
+        saveToStorage();
+        return deletedTask;
+    }
+
+    /**
+     * Marks a task and saves to storage.
+     *
+     * @param task Task to mark as done
+     */
+    public void markTaskAsDone(Task task) {
+        task.markAsDone();
+        saveToStorage();
+    }
+
+    /**
+     * Unmarks a task and saves to storage.
+     *
+     * @param task Task to mark as not done
+     */
+    public void markTaskAsNotDone(Task task) {
+        task.markAsNotDone();
+        saveToStorage();
     }
 
     /**
@@ -44,7 +78,7 @@ public class TaskList {
      * @return Number of tasks currently stored
      */
     public int getTaskCount() {
-        return taskCount;
+        return tasks.size();
     }
 
     /**
@@ -53,7 +87,16 @@ public class TaskList {
      * @return true if list contains no tasks, false otherwise
      */
     public boolean isEmpty() {
-        return taskCount == 0;
+        return tasks.isEmpty();
+    }
+
+    /**
+     * Loads tasks from storage into the list.
+     *
+     * @throws StorageException If loading fails
+     */
+    public void loadTasks() throws StorageException {
+        this.tasks = storage.load();
     }
 
     /**
@@ -71,6 +114,35 @@ public class TaskList {
     }
 
     /**
+     * Finds and returns all tasks containing the keyword.
+     *
+     * @param keyword Keyword to search for
+     * @param indent Indentation string for formatting
+     * @return Formatted string with matching tasks
+     */
+    public String findTasks(String keyword, String indent) {
+        StringBuilder result = new StringBuilder();
+        result.append(indent).append("Here are the matching tasks in your list:");
+
+        int matchCount = 0;
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).getDescription().contains(keyword)) {
+                result.append("\n")
+                        .append(indent)
+                        .append(++matchCount)
+                        .append(".")
+                        .append(tasks.get(i));
+            }
+        }
+
+        if (matchCount == 0) {
+            return indent + "No matching tasks found!";
+        }
+
+        return result.toString();
+    }
+
+    /**
      * Builds the formatted task list string.
      *
      * @param indent Indentation string for formatting
@@ -80,7 +152,7 @@ public class TaskList {
         StringBuilder result = new StringBuilder();
         result.append(indent).append("Here are the tasks in your list:");
 
-        for (int i = 0; i < taskCount; i++) {
+        for (int i = 0; i < tasks.size(); i++) {
             appendTaskToList(result, indent, i);
         }
 
@@ -100,6 +172,18 @@ public class TaskList {
                 .append(indent)
                 .append(displayNumber)
                 .append(".")
-                .append(tasks[index]);
+                .append(tasks.get(index));
+    }
+
+    /**
+     * Saves the current task list to storage.
+     * Prints error message if save fails.
+     */
+    private void saveToStorage() {
+        try {
+            storage.save(tasks);
+        } catch (StorageException e) {
+            System.out.println("    Error saving tasks: " + e.getMessage());
+        }
     }
 }
