@@ -18,23 +18,19 @@ public class Abs {
 
     private static final String COMMAND_BYE = "bye";
     private static final String COMMAND_LIST = "list";
-    private static final String COMMAND_PREFIX_MARK = "mark ";
-    private static final String COMMAND_PREFIX_UNMARK = "unmark ";
-    private static final String COMMAND_PREFIX_TODO = "todo ";
-    private static final String COMMAND_PREFIX_DEADLINE = "deadline ";
-    private static final String COMMAND_PREFIX_EVENT = "event ";
-    private static final String COMMAND_PREFIX_DELETE = "delete ";
-    private static final String COMMAND_PREFIX_FIND = "find ";
+    private static final String COMMAND_TODO = "todo";
+    private static final String COMMAND_DEADLINE = "deadline";
+    private static final String COMMAND_EVENT = "event";
+    private static final String COMMAND_MARK = "mark";
+    private static final String COMMAND_UNMARK = "unmark";
+    private static final String COMMAND_DELETE = "delete";
+    private static final String COMMAND_FIND = "find";
+
     private static final String DATA_FILE_PATH = Paths.get("data", "abs.txt").toString();
 
-
-    private static final int MARK_PREFIX_LENGTH = 5;
-    private static final int UNMARK_PREFIX_LENGTH = 7;
     private static final int TODO_PREFIX_LENGTH = 5;
     private static final int DEADLINE_PREFIX_LENGTH = 9;
     private static final int EVENT_PREFIX_LENGTH = 6;
-    private static final int DELETE_PREFIX_LENGTH = 7;
-    private static final int FIND_PREFIX_LENGTH = 5;
 
     private Storage storage;
     private TaskList taskList;
@@ -103,7 +99,16 @@ public class Abs {
      * Gets the user's name and displays a personalized greeting.
      */
     private void getUserName() {
-        userName = scanner.nextLine();
+        userName = scanner.nextLine().trim();
+
+        // Handle empty name
+        while (userName.isEmpty()) {
+            printSeparator();
+            System.out.println(INDENT + "I didn't catch your name! What's your name?");
+            printSeparator();
+            userName = scanner.nextLine().trim();
+        }
+
         printSeparator();
         System.out.println(INDENT + "Hi " + userName + "! Hope you are doing great!");
         System.out.println(INDENT + "What can I do for you?");
@@ -114,17 +119,26 @@ public class Abs {
      * Processes user commands in a loop until "bye" is entered.
      */
     private void handleUserCommands() {
-        String input = scanner.nextLine();
+        String input = scanner.nextLine().trim();
 
-        while (!input.equals(COMMAND_BYE)) {
+        while (!input.equalsIgnoreCase(COMMAND_BYE)) {
             printSeparator();
+
+            // Handle empty input
+            if (input.trim().isEmpty()) {
+                System.out.println(INDENT + "Please enter a command, " + userName + "!");
+                printSeparator();
+                input = scanner.nextLine().trim();
+                continue;
+            }
+
             try {
                 processCommand(input);
             } catch (AbsException e) {
                 System.out.println(INDENT + e.getMessage());
             }
             printSeparator();
-            input = scanner.nextLine();
+            input = scanner.nextLine().trim();
         }
     }
 
@@ -135,59 +149,45 @@ public class Abs {
      * @throws AbsException If command is invalid or has missing parameters
      */
     private void processCommand(String input) throws AbsException {
-        if (input.equals(COMMAND_LIST)) {
+        // Extract command (first word, case-insensitive)
+        String[] words = input.split("\\s+", 2);
+        String command = words[0].toLowerCase();
+
+        switch (command) {
+        case COMMAND_LIST:
             handleListCommand();
+            break;
 
-        } else if (input.startsWith(COMMAND_PREFIX_MARK)) {
-            handleMarkCommand(input);
-        } else if (input.startsWith(COMMAND_PREFIX_UNMARK)) {
-            handleUnmarkCommand(input);
-        } else if (input.startsWith(COMMAND_PREFIX_DELETE)) {
-            handleDeleteCommand(input);
-        } else if (input.startsWith(COMMAND_PREFIX_TODO)) {
+        case COMMAND_MARK:
+            handleMarkCommand(input, words);
+            break;
+
+        case COMMAND_UNMARK:
+            handleUnmarkCommand(input, words);
+            break;
+
+        case COMMAND_DELETE:
+            handleDeleteCommand(input, words);
+            break;
+
+        case COMMAND_TODO:
             handleTodoCommand(input);
-        } else if (input.startsWith(COMMAND_PREFIX_DEADLINE)) {
+            break;
+
+        case COMMAND_DEADLINE:
             handleDeadlineCommand(input);
-        } else if (input.startsWith(COMMAND_PREFIX_EVENT)) {
+            break;
+
+        case COMMAND_EVENT:
             handleEventCommand(input);
+            break;
 
-        } else if (input.equals("todo") || input.equals("deadline") || input.equals("event")
-            || input.equals("mark") || input.equals("unmark") || input.equals("delete")) {
-            handleCommandWithoutArguments(input);
+        case COMMAND_FIND:
+            handleFindCommand(input, words);
+            break;
 
-        } else {
+        default:
             throw new AbsException("I don't understand that " + userName + "! Please try again!");
-        }
-    }
-
-    /**
-     * Handles commands that were entered without required arguments.
-     *
-     * @param input The command without arguments
-     * @throws AbsException With a helpful error message for the specific command
-     */
-    private void handleCommandWithoutArguments(String input) throws AbsException {
-        if (input.equals("todo")) {
-            throw new AbsException("Did you forget " + userName + "? Remember to put an activity after todo!");
-        } else if (input.equals("deadline")) {
-            throw new AbsException("Did you forget " + userName + "? Remember to put an activity after deadline!");
-        } else if (input.equals("event")) {
-            throw new AbsException("Did you forget " + userName + "? Remember to put an activity after event!");
-        } else if (input.equals("mark")) {
-            if (taskList.isEmpty()) {
-                throw new AbsException("There is nothing on the list to mark " + userName + "!");
-            }
-            throw new AbsException("Which task " + userName + "? Remember to put a number after mark!");
-        } else if (input.equals("unmark")) {
-            if (taskList.isEmpty()) {
-                throw new AbsException("There is nothing on the list to unmark " + userName + "!");
-            }
-            throw new AbsException("Which task " + userName + "? Remember to put a number after unmark!");
-        } else if (input.equals("delete")) {
-            if (taskList.isEmpty()) {
-                throw new AbsException("There is nothing on the list to delete " + userName + "!");
-            }
-            throw new AbsException("Which task " + userName + "? Remember to put a number after delete!");
         }
     }
 
@@ -201,81 +201,109 @@ public class Abs {
     /**
      * Handles the mark command to mark a task as done.
      *
-     * @param input User command containing task number to mark
+     * @param input Full user command
+     * @param words Command split into words
      * @throws AbsException If task number is invalid or list is empty
      */
-    private void handleMarkCommand(String input) throws AbsException {
+    private void handleMarkCommand(String input, String[] words) throws AbsException {
         if (taskList.isEmpty()) {
             throw new AbsException("There is nothing on the list to mark " + userName + "!");
         }
 
+        if (words.length < 2 || words[1].trim().isEmpty()) {
+            throw new AbsException("Which task " + userName + "? Remember to put a number after mark!");
+        }
+
         try {
-            int taskNumber = parseTaskNumber(input, MARK_PREFIX_LENGTH);
+            int taskNumber = Integer.parseInt(words[1].trim());
             if (taskNumber < 1 || taskNumber > taskList.getTaskCount()) {
                 throw new AbsException("Oops " + userName + "! Task number " + taskNumber
-                        + " doesn't exist in your list!");
+                        + " doesn't exist in your list! You have " + taskList.getTaskCount() + " tasks.");
             }
             Task task = taskList.getTask(taskNumber - 1);
-            taskList.markTaskAsDone(task);  // Changed this line
+            taskList.markTaskAsDone(task);
             printTaskMarkedAsDone(task);
         } catch (NumberFormatException e) {
-            throw new AbsException("Hey " + userName + "! Please give me a valid task number to mark!");
-        } catch (StringIndexOutOfBoundsException e) {
-            throw new AbsException("Which task " + userName + "? Remember to put a number after mark!");
+            throw new AbsException("Hey " + userName + "! '" + words[1]
+                    + "' is not a valid number! Please give me a task number.");
         }
     }
 
     /**
      * Handles the unmark command to mark a task as not done.
      *
-     * @param input User command containing task number to unmark
+     * @param input Full user command
+     * @param words Command split into words
      * @throws AbsException If task number is invalid or list is empty
      */
-    private void handleUnmarkCommand(String input) throws AbsException {
+    private void handleUnmarkCommand(String input, String[] words) throws AbsException {
         if (taskList.isEmpty()) {
             throw new AbsException("There is nothing on the list to unmark " + userName + "!");
         }
 
+        if (words.length < 2 || words[1].trim().isEmpty()) {
+            throw new AbsException("Which task " + userName + "? Remember to put a number after unmark!");
+        }
+
         try {
-            int taskNumber = parseTaskNumber(input, UNMARK_PREFIX_LENGTH);
+            int taskNumber = Integer.parseInt(words[1].trim());
             if (taskNumber < 1 || taskNumber > taskList.getTaskCount()) {
                 throw new AbsException("Oops " + userName + "! Task number " + taskNumber
-                        + " doesn't exist in your list!");
+                        + " doesn't exist in your list! You have " + taskList.getTaskCount() + " tasks.");
             }
             Task task = taskList.getTask(taskNumber - 1);
-            taskList.markTaskAsNotDone(task);  // Changed this line
+            taskList.markTaskAsNotDone(task);
             printTaskMarkedAsNotDone(task);
         } catch (NumberFormatException e) {
-            throw new AbsException("Hey " + userName + "! Please give me a valid task number to unmark!");
-        } catch (StringIndexOutOfBoundsException e) {
-            throw new AbsException("Which task " + userName + "? Remember to put a number after unmark!");
+            throw new AbsException("Hey " + userName + "! '" + words[1]
+                    + "' is not a valid number! Please give me a task number.");
         }
     }
 
     /**
      * Handles the delete command to remove a task from the list.
      *
-     * @param input User command containing task number to delete
+     * @param input Full user command
+     * @param words Command split into words
      * @throws AbsException If task number is invalid or list is empty
      */
-    private void handleDeleteCommand(String input) throws AbsException {
+    private void handleDeleteCommand(String input, String[] words) throws AbsException {
         if (taskList.isEmpty()) {
             throw new AbsException("There is nothing on the list to delete " + userName + "!");
         }
 
+        if (words.length < 2 || words[1].trim().isEmpty()) {
+            throw new AbsException("Which task " + userName + "? Remember to put a number after delete!");
+        }
+
         try {
-            int taskNumber = parseTaskNumber(input, DELETE_PREFIX_LENGTH);
+            int taskNumber = Integer.parseInt(words[1].trim());
             if (taskNumber < 1 || taskNumber > taskList.getTaskCount()) {
                 throw new AbsException("Oops " + userName + "! Task number " + taskNumber
-                        + " doesn't exist in your list!");
+                        + " doesn't exist in your list! You have " + taskList.getTaskCount() + " tasks.");
             }
             Task deletedTask = taskList.deleteTask(taskNumber - 1);
             printTaskDeleted(deletedTask);
         } catch (NumberFormatException e) {
-            throw new AbsException("Hey " + userName + "! Please give me a valid task number to delete!");
-        } catch (StringIndexOutOfBoundsException e) {
-            throw new AbsException("Which task " + userName + "? Remember to put a number after delete!");
+            throw new AbsException("Hey " + userName + "! '" + words[1]
+                    + "' is not a valid number! Please give me a task number.");
         }
+    }
+
+    /**
+     * Handles the find command to search for tasks.
+     *
+     * @param input Full user command
+     * @param words Command split into words
+     * @throws AbsException If keyword is missing
+     */
+    private void handleFindCommand(String input, String[] words) throws AbsException {
+        if (words.length < 2 || words[1].trim().isEmpty()) {
+            throw new AbsException("What should I find " + userName + "? Please provide a keyword!");
+        }
+
+        String keyword = words[1].trim();
+        System.out.println(taskList.findTasks(keyword, INDENT));
     }
 
     /**
@@ -296,6 +324,10 @@ public class Abs {
      * @throws AbsException If description is empty
      */
     private void handleTodoCommand(String input) throws AbsException {
+        if (input.length() <= TODO_PREFIX_LENGTH) {
+            throw new AbsException("Did you forget " + userName + "? Remember to put an activity after todo!");
+        }
+
         String description = input.substring(TODO_PREFIX_LENGTH).trim();
         if (description.isEmpty()) {
             throw new AbsException("Did you forget " + userName + "? Remember to put an activity after todo!");
@@ -312,22 +344,28 @@ public class Abs {
      * @throws AbsException If description or deadline is missing or invalid format
      */
     private void handleDeadlineCommand(String input) throws AbsException {
+        if (input.length() <= DEADLINE_PREFIX_LENGTH) {
+            throw new AbsException("Did you forget " + userName + "? Remember to put an activity after deadline!");
+        }
+
         String taskDetails = input.substring(DEADLINE_PREFIX_LENGTH).trim();
         if (taskDetails.isEmpty()) {
             throw new AbsException("Did you forget " + userName + "? Remember to put an activity after deadline!");
         }
 
         if (!taskDetails.contains(" /by ")) {
-            throw new AbsException("Hey " + userName + "! Don't forget to use /by to specify the deadline time!");
+            throw new AbsException("Hey " + userName + "! Don't forget to use /by to specify the deadline time!\n"
+                    + INDENT + "Format: deadline <description> /by <time>");
         }
 
-        String[] parts = taskDetails.split(" /by ");
+        String[] parts = taskDetails.split(" /by ", 2);
         if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
-            throw new AbsException(userName + ", I need both the activity and the deadline time!");
+            throw new AbsException(userName + ", I need both the activity and the deadline time!\n"
+                    + INDENT + "Format: deadline <description> /by <time>");
         }
 
-        String description = parts[0];
-        String deadline = parts[1];
+        String description = parts[0].trim();
+        String deadline = parts[1].trim();
 
         Task newTask = new Deadline(description, deadline);
         addTaskAndConfirm(newTask);
@@ -340,6 +378,10 @@ public class Abs {
      * @throws AbsException If any required information is missing or invalid format
      */
     private void handleEventCommand(String input) throws AbsException {
+        if (input.length() <= EVENT_PREFIX_LENGTH) {
+            throw new AbsException("Did you forget " + userName + "? Remember to put an activity after event!");
+        }
+
         String taskDetails = input.substring(EVENT_PREFIX_LENGTH).trim();
         if (taskDetails.isEmpty()) {
             throw new AbsException("Did you forget " + userName + "? Remember to put an activity after event!");
@@ -347,7 +389,8 @@ public class Abs {
 
         if (!taskDetails.contains(" /from ") || !taskDetails.contains(" /to ")) {
             throw new AbsException("Hey " + userName
-                    + "! Don't forget to use /from and /to to specify the event timing!");
+                    + "! Don't forget to use /from and /to to specify the event timing!\n"
+                    + INDENT + "Format: event <description> /from <start> /to <end>");
         }
 
         String[] eventParts = parseEventDetails(taskDetails);
@@ -364,23 +407,26 @@ public class Abs {
      * @throws AbsException If parsing fails or required information is missing
      */
     private String[] parseEventDetails(String taskDetails) throws AbsException {
-        String[] parts = taskDetails.split(" /from ");
+        String[] parts = taskDetails.split(" /from ", 2);
         if (parts.length < 2) {
-            throw new AbsException(userName + ", I can't find the /from in your event command!");
+            throw new AbsException(userName + ", I can't find the /from in your event command!\n"
+                    + INDENT + "Format: event <description> /from <start> /to <end>");
         }
 
-        String description = parts[0];
-        String[] timeParts = parts[1].split(" /to ");
+        String description = parts[0].trim();
+        String[] timeParts = parts[1].split(" /to ", 2);
 
         if (timeParts.length < 2) {
-            throw new AbsException(userName + ", I can't find the /to in your event command!");
+            throw new AbsException(userName + ", I can't find the /to in your event command!\n"
+                    + INDENT + "Format: event <description> /from <start> /to <end>");
         }
 
-        String startTime = timeParts[0];
-        String endTime = timeParts[1];
+        String startTime = timeParts[0].trim();
+        String endTime = timeParts[1].trim();
 
-        if (description.trim().isEmpty() || startTime.trim().isEmpty() || endTime.trim().isEmpty()) {
-            throw new AbsException(userName + ", I need the activity, start time, and end time for the event!");
+        if (description.isEmpty() || startTime.isEmpty() || endTime.isEmpty()) {
+            throw new AbsException(userName + ", I need the activity, start time, and end time for the event!\n"
+                    + INDENT + "Format: event <description> /from <start> /to <end>");
         }
 
         return new String[]{description, startTime, endTime};
@@ -416,18 +462,6 @@ public class Abs {
     private void printTaskMarkedAsNotDone(Task task) {
         System.out.println(INDENT + "OK, I've marked this task as not done yet:");
         System.out.println(INDENT + "  " + task);
-    }
-
-    /**
-     * Parses the task number from a user command.
-     *
-     * @param input User command string
-     * @param prefixLength Length of the command prefix to skip
-     * @return Task number entered by user
-     * @throws NumberFormatException If the task number is not a valid integer
-     */
-    private int parseTaskNumber(String input, int prefixLength) {
-        return Integer.parseInt(input.substring(prefixLength));
     }
 
     /**
