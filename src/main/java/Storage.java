@@ -10,6 +10,7 @@ import java.util.List;
  * Handles loading and saving of tasks to/from a file.
  */
 public class Storage {
+    private static final String INDENT = "    ";
     /** File path for storing tasks */
     private final String filePath;
 
@@ -53,7 +54,7 @@ public class Storage {
                     tasks.add(task);
                 } catch (StorageException e) {
                     // Log corrupted line but continue loading other tasks
-                    System.out.println("Warning: Corrupted data at line " + (i + 1) + ": " + line);
+                    System.out.println(INDENT+ "Warning: Corrupted data at line " + (i + 1) + ": " + line);
                 }
             }
         } catch (IOException e) {

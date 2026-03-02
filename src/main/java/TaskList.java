@@ -5,6 +5,7 @@ import java.util.ArrayList;
  * Notifies storage when tasks are modified.
  */
 public class TaskList {
+    private static final String INDENT = "    ";
     /** List storing all tasks */
     private ArrayList<Task> tasks;
     /** Storage handler for saving tasks */
@@ -150,7 +151,7 @@ public class TaskList {
         try {
             storage.save(tasks);
         } catch (StorageException e) {
-            System.out.println("    Error saving tasks: " + e.getMessage());
+            System.out.println(INDENT + "Error saving tasks: " + e.getMessage());
         }
     }
 }

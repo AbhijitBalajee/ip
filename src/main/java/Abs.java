@@ -6,6 +6,7 @@ import java.nio.file.Paths;
  */
 public class Abs {
     private static final String DATA_FILE_PATH = Paths.get("data", "abs.txt").toString();
+    private static final String INDENT = "    ";
 
     private Storage storage;
     private TaskList taskList;
@@ -130,7 +131,7 @@ public class Abs {
      * Handles the list command.
      */
     private void handleList() {
-        ui.showTaskList(taskList.listTasks("    ", userName));
+        ui.showTaskList(taskList.listTasks(INDENT, userName));
     }
 
     /**
@@ -151,6 +152,10 @@ public class Abs {
         }
 
         Task task = taskList.getTask(taskNumber - 1);
+        if (task.isCompleted()) {                                                          // ADD THIS
+            throw new AbsException("Task " + taskNumber + " is already done, " + userName + "!");
+        }
+
         taskList.markTaskAsDone(task);
         ui.showTaskMarkedAsDone(task, userName);
     }
@@ -173,6 +178,10 @@ public class Abs {
         }
 
         Task task = taskList.getTask(taskNumber - 1);
+        if (!task.isCompleted()) {                                                          // ADD THIS
+            throw new AbsException("Task " + taskNumber + " is not marked yet, " + userName + "!");
+        }
+
         taskList.markTaskAsNotDone(task);
         ui.showTaskMarkedAsNotDone(task, userName);
 
@@ -246,7 +255,7 @@ public class Abs {
      */
     private void handleFind(String input) throws AbsException {
         String keyword = Parser.parseFindKeyword(input, userName);
-        ui.showFindResults(taskList.findTasks(keyword, "    ", userName));
+        ui.showFindResults(taskList.findTasks(keyword, INDENT, userName));
     }
 
     /**

@@ -11,7 +11,7 @@ public class Parser {
      */
     public static String getCommand(String input) {
         String[] words = input.split("\\s+", 2);
-        return words[0].toLowerCase();
+        return words[0].toLowerCase().replaceAll("\\d+.*", "");
     }
 
     /**
