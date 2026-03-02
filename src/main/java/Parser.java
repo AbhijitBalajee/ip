@@ -141,8 +141,9 @@ public class Parser {
 
     /**
      * Parses a date string for searching tasks on a specific date.
-     * * @param input Full user input (e.g., "occur 2019-12-02")
      *
+     * @param input Full user input (e.g., "occur 2019-12-02")
+     * @param userName User's name for personalized error messages
      * @return LocalDate object
      * @throws AbsException If date format is invalid or missing
      */

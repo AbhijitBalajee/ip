@@ -16,7 +16,7 @@ public class Event extends Task {
     /** Original end time string */
     private String endString;
     /** Whether the times were successfully parsed */
-    private boolean isParsedDateTime;
+    private boolean hasValidDateTime;
 
     /**
      * Constructs an Event task.
@@ -32,14 +32,12 @@ public class Event extends Task {
         this.endString = end;
 
         try {
-            // Try to parse as LocalDateTime (yyyy-mm-dd HHmm format)
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
             this.startDateTime = LocalDateTime.parse(start, formatter);
             this.endDateTime = LocalDateTime.parse(end, formatter);
-            this.isParsedDateTime = true;
+            this.hasValidDateTime = true;
         } catch (DateTimeParseException e) {
-            // If parsing fails, keep as strings
-            this.isParsedDateTime = false;
+            this.hasValidDateTime = false;
         }
     }
 
@@ -59,7 +57,7 @@ public class Event extends Task {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
         this.startString = startDateTime.format(formatter);
         this.endString = endDateTime.format(formatter);
-        this.isParsedDateTime = true;
+        this.hasValidDateTime = true;
     }
 
     /**
@@ -68,7 +66,7 @@ public class Event extends Task {
      * @return Start time string (for storage)
      */
     public String getStartTime() {
-        if (isParsedDateTime) {
+        if (hasValidDateTime) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
             return startDateTime.format(formatter);
         }
@@ -81,7 +79,7 @@ public class Event extends Task {
      * @return End time string (for storage)
      */
     public String getEndTime() {
-        if (isParsedDateTime) {
+        if (hasValidDateTime) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
             return endDateTime.format(formatter);
         }
@@ -117,8 +115,7 @@ public class Event extends Task {
         String startDisplay;
         String endDisplay;
 
-        if (isParsedDateTime) {
-            // Format as "MMM dd yyyy, h:mma" (e.g., "Dec 02 2019, 6:00PM")
+        if (hasValidDateTime) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd yyyy, h:mma");
             startDisplay = startDateTime.format(formatter);
             endDisplay = endDateTime.format(formatter);

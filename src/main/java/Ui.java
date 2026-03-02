@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * Handles all user interface interactions.
@@ -170,6 +172,25 @@ public class Ui {
      */
     public void showTaskList(String formattedList) {
         System.out.println(formattedList);
+    }
+
+    /**
+     * Displays tasks scheduled on a specific date.
+     *
+     * @param userName User's name
+     * @param date The date being searched
+     * @param tasks List of matching tasks
+     */
+    public void showDateResults(String userName, java.time.LocalDate date, List<Task> tasks) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd yyyy");
+        System.out.println(INDENT + "Okay " + userName + ", here are the tasks on " + date.format(formatter) + ":");
+        if (tasks.isEmpty()) {
+            System.out.println(INDENT + "Nothing scheduled for this date! Rest easy.");
+            return;
+        }
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println(INDENT + (i + 1) + "." + tasks.get(i));
+        }
     }
 
     /**

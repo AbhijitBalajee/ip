@@ -206,10 +206,10 @@ public class Abs {
      * @throws AbsException If todo creation fails
      */
     private void handleTodo(String input) throws AbsException {
-        String description = Parser.parseTodo(input, userName); // Personalized Parser
+        String description = Parser.parseTodo(input, userName);
         Task newTask = new Todo(description);
         taskList.addTask(newTask);
-        ui.showTaskAdded(newTask, taskList.getTaskCount(), userName); // Personalized UI
+        ui.showTaskAdded(newTask, taskList.getTaskCount(), userName);
     }
 
     /**
@@ -257,33 +257,23 @@ public class Abs {
      */
     private void handleDate(String input) throws AbsException {
         java.time.LocalDate searchDate = Parser.parseDateCommand(input, userName);
+        java.util.List<Task> matchingTasks = new java.util.ArrayList<>();
 
-        System.out.println("    Okay " + userName + ", here are the tasks on " +
-                searchDate.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd yyyy")) + ":");
-        int count = 0;
         for (int i = 0; i < taskList.getTaskCount(); i++) {
             Task task = taskList.getTask(i);
-            boolean isMatch = false;
-
-            if (task instanceof Deadline) {
-                isMatch = ((Deadline) task).isOnDate(searchDate);
+            if (task instanceof Deadline && ((Deadline) task).isOnDate(searchDate)) {
+                matchingTasks.add(task);
             } else if (task instanceof Event) {
-                Event e = (Event) task;
-                if (e.getStartDateTime() != null && e.getEndDateTime() != null) {
-                    java.time.LocalDate start = e.getStartDateTime().toLocalDate();
-                    java.time.LocalDate end = e.getEndDateTime().toLocalDate();
-                    isMatch = !searchDate.isBefore(start) && !searchDate.isAfter(end);
+                Event event = (Event) task;
+                if (event.getStartDateTime() != null && event.getEndDateTime() != null) {
+                    java.time.LocalDate start = event.getStartDateTime().toLocalDate();
+                    java.time.LocalDate end = event.getEndDateTime().toLocalDate();
+                    if (!searchDate.isBefore(start) && !searchDate.isAfter(end)) {
+                        matchingTasks.add(task);
+                    }
                 }
             }
-
-            if (isMatch) {
-                count++;
-                System.out.println("    " + count + "." + task);
-            }
         }
-
-        if (count == 0) {
-            System.out.println("    Nothing scheduled for this date! Rest easy.");
-        }
+        ui.showDateResults(userName, searchDate, matchingTasks);
     }
 }

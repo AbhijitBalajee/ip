@@ -143,39 +143,6 @@ public class TaskList {
     }
 
     /**
-     * Builds the formatted task list string.
-     *
-     * @param indent Indentation string for formatting
-     * @return Formatted string with all tasks numbered
-     */
-    private String buildTaskListString(String indent) {
-        StringBuilder result = new StringBuilder();
-        result.append(indent).append("Here are the tasks in your list:");
-
-        for (int i = 0; i < tasks.size(); i++) {
-            appendTaskToList(result, indent, i);
-        }
-
-        return result.toString();
-    }
-
-    /**
-     * Appends a single task to the string builder.
-     *
-     * @param result StringBuilder to append to
-     * @param indent Indentation string
-     * @param index Index of the task to append (0-based)
-     */
-    private void appendTaskToList(StringBuilder result, String indent, int index) {
-        int displayNumber = index + 1;
-        result.append("\n")
-                .append(indent)
-                .append(displayNumber)
-                .append(".")
-                .append(tasks.get(index));
-    }
-
-    /**
      * Saves the current task list to storage.
      * Prints error message if save fails.
      */
