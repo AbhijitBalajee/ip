@@ -21,18 +21,12 @@ public class Parser {
      * @return Task description
      * @throws AbsException If description is missing
      */
-    public static String parseTodo(String input) throws AbsException {
-        int todoLength = 5; // "todo ".length()
-        if (input.length() <= todoLength) {
-            throw new AbsException("Did you forget? Remember to put an activity after todo!");
+    public static String parseTodo(String input, String userName) throws AbsException {
+        int todoLength = 5;
+        if (input.length() <= todoLength || input.substring(todoLength).trim().isEmpty()) {
+            throw new AbsException("Did you forget, " + userName + "? Remember to put an activity after todo!");
         }
-
-        String description = input.substring(todoLength).trim();
-        if (description.isEmpty()) {
-            throw new AbsException("Did you forget? Remember to put an activity after todo!");
-        }
-
-        return description;
+        return input.substring(todoLength).trim();
     }
 
     /**
@@ -42,28 +36,16 @@ public class Parser {
      * @return Array with [description, deadline]
      * @throws AbsException If format is invalid
      */
-    public static String[] parseDeadline(String input) throws AbsException {
-        int deadlineLength = 9; // "deadline ".length()
-        if (input.length() <= deadlineLength) {
-            throw new AbsException("Did you forget? Remember to put an activity after deadline!");
+    public static String[] parseDeadline(String input, String userName) throws AbsException {
+        int deadlineLength = 9;
+        if (input.length() <= deadlineLength || input.substring(deadlineLength).trim().isEmpty()) {
+            throw new AbsException("I need an activity, " + userName + "! Try: deadline <task> /by <time>");
         }
-
         String taskDetails = input.substring(deadlineLength).trim();
-        if (taskDetails.isEmpty()) {
-            throw new AbsException("Did you forget? Remember to put an activity after deadline!");
-        }
-
         if (!taskDetails.contains(" /by ")) {
-            throw new AbsException("Don't forget to use /by to specify the deadline time!\n"
-                    + "    Format: deadline <description> /by <time>");
+            throw new AbsException("Don't forget the /by, " + userName + "! I need to know when it's due.");
         }
-
         String[] parts = taskDetails.split(" /by ", 2);
-        if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
-            throw new AbsException("I need both the activity and the deadline time!\n"
-                    + "    Format: deadline <description> /by <time>");
-        }
-
         return new String[]{parts[0].trim(), parts[1].trim()};
     }
 
@@ -74,10 +56,10 @@ public class Parser {
      * @return Array with [description, start, end]
      * @throws AbsException If format is invalid
      */
-    public static String[] parseEvent(String input) throws AbsException {
-        int eventLength = 6; // "event ".length()
-        if (input.length() <= eventLength) {
-            throw new AbsException("Did you forget? Remember to put an activity after event!");
+    public static String[] parseEvent(String input, String userName) throws AbsException {
+        int eventLength = 6;
+        if (input.length() <= eventLength || input.substring(eventLength).trim().isEmpty()) {
+            throw new AbsException("Did you forget, " + userName + "? Remember to put an activity after event!");
         }
 
         String taskDetails = input.substring(eventLength).trim();
@@ -124,28 +106,21 @@ public class Parser {
      * @return Task number (1-indexed)
      * @throws AbsException If number is missing or invalid
      */
-    public static int parseTaskNumber(String input, String commandName) throws AbsException {
-        // Extract everything after the command
+    public static int parseTaskNumber(String input, String commandName, String userName) throws AbsException {
         String afterCommand = "";
-
-        // Remove the command from the beginning (case-insensitive)
         if (input.toLowerCase().startsWith(commandName)) {
             afterCommand = input.substring(commandName.length()).trim();
         }
 
-        // If nothing after command
         if (afterCommand.isEmpty()) {
-            throw new AbsException("Which task? Remember to put a number after " + commandName + "!");
+            throw new AbsException("Which task, " + userName + "? Remember to put a number after " + commandName + "!");
         }
 
-        // Try to parse as number
         try {
-            // Handle case where there might be extra text after the number
-            // e.g., "mark 1 hello" should just get the "1"
             String[] parts = afterCommand.split("\\s+");
             return Integer.parseInt(parts[0]);
         } catch (NumberFormatException e) {
-            throw new AbsException("'" + afterCommand + "' is not a valid number! Please give me a task number.");
+            throw new AbsException("Sorry " + userName + ", '" + afterCommand + "' is not a valid number!");
         }
     }
 
@@ -156,13 +131,11 @@ public class Parser {
      * @return Search keyword
      * @throws AbsException If keyword is missing
      */
-    public static String parseFindKeyword(String input) throws AbsException {
+    public static String parseFindKeyword(String input, String userName) throws AbsException {
         String[] words = input.split("\\s+", 2);
-
         if (words.length < 2 || words[1].trim().isEmpty()) {
-            throw new AbsException("What should I find? Please provide a keyword!");
+            throw new AbsException("What should I find, " + userName + "? Please provide a keyword!");
         }
-
         return words[1].trim();
     }
 
@@ -173,15 +146,15 @@ public class Parser {
      * @return LocalDate object
      * @throws AbsException If date format is invalid or missing
      */
-    public static java.time.LocalDate parseDateCommand(String input) throws AbsException {
+    public static java.time.LocalDate parseDateCommand(String input, String userName) throws AbsException {
         String[] words = input.split("\\s+", 2);
         if (words.length < 2) {
-            throw new AbsException("Please specify a date! Format: date yyyy-mm-dd");
+            throw new AbsException("Tell me the date, " + userName + "! Use the format: yyyy-mm-dd");
         }
         try {
             return java.time.LocalDate.parse(words[1].trim());
         } catch (java.time.format.DateTimeParseException e) {
-            throw new AbsException("I don't recognize that date format. Please use yyyy-mm-dd (e.g., 2019-12-02).");
+            throw new AbsException("I don't recognize that date, " + userName + "! Try yyyy-mm-dd (e.g., 2026-12-01).");
         }
     }
 }

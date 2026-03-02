@@ -130,7 +130,7 @@ public class Abs {
      * Handles the list command.
      */
     private void handleList() {
-        ui.showTaskList(taskList.listTasks("    "));
+        ui.showTaskList(taskList.listTasks("    ", userName));
     }
 
     /**
@@ -144,7 +144,7 @@ public class Abs {
             throw new AbsException("There is nothing on the list to mark " + userName + "!");
         }
 
-        int taskNumber = Parser.parseTaskNumber(input, "mark");
+        int taskNumber = Parser.parseTaskNumber(input, "mark", userName);
         if (taskNumber < 1 || taskNumber > taskList.getTaskCount()) {
             throw new AbsException("Oops " + userName + "! Task number " + taskNumber
                     + " doesn't exist in your list! You have " + taskList.getTaskCount() + " tasks.");
@@ -152,7 +152,7 @@ public class Abs {
 
         Task task = taskList.getTask(taskNumber - 1);
         taskList.markTaskAsDone(task);
-        ui.showTaskMarkedAsDone(task);
+        ui.showTaskMarkedAsDone(task, userName);
     }
 
     /**
@@ -166,7 +166,7 @@ public class Abs {
             throw new AbsException("There is nothing on the list to unmark " + userName + "!");
         }
 
-        int taskNumber = Parser.parseTaskNumber(input, "unmark");
+        int taskNumber = Parser.parseTaskNumber(input, "unmark", userName);
         if (taskNumber < 1 || taskNumber > taskList.getTaskCount()) {
             throw new AbsException("Oops " + userName + "! Task number " + taskNumber
                     + " doesn't exist in your list! You have " + taskList.getTaskCount() + " tasks.");
@@ -174,7 +174,8 @@ public class Abs {
 
         Task task = taskList.getTask(taskNumber - 1);
         taskList.markTaskAsNotDone(task);
-        ui.showTaskMarkedAsNotDone(task);
+        ui.showTaskMarkedAsNotDone(task, userName);
+
     }
 
     /**
@@ -188,14 +189,14 @@ public class Abs {
             throw new AbsException("There is nothing on the list to delete " + userName + "!");
         }
 
-        int taskNumber = Parser.parseTaskNumber(input, "delete");
+        int taskNumber = Parser.parseTaskNumber(input, "delete", userName);
         if (taskNumber < 1 || taskNumber > taskList.getTaskCount()) {
             throw new AbsException("Oops " + userName + "! Task number " + taskNumber
                     + " doesn't exist in your list! You have " + taskList.getTaskCount() + " tasks.");
         }
 
         Task deletedTask = taskList.deleteTask(taskNumber - 1);
-        ui.showTaskDeleted(deletedTask, taskList.getTaskCount());
+        ui.showTaskDeleted(deletedTask, taskList.getTaskCount(), userName);
     }
 
     /**
@@ -205,10 +206,10 @@ public class Abs {
      * @throws AbsException If todo creation fails
      */
     private void handleTodo(String input) throws AbsException {
-        String description = Parser.parseTodo(input);
+        String description = Parser.parseTodo(input, userName); // Personalized Parser
         Task newTask = new Todo(description);
         taskList.addTask(newTask);
-        ui.showTaskAdded(newTask, taskList.getTaskCount());
+        ui.showTaskAdded(newTask, taskList.getTaskCount(), userName); // Personalized UI
     }
 
     /**
@@ -218,10 +219,10 @@ public class Abs {
      * @throws AbsException If deadline creation fails
      */
     private void handleDeadline(String input) throws AbsException {
-        String[] parts = Parser.parseDeadline(input);
+        String[] parts = Parser.parseDeadline(input, userName);
         Task newTask = new Deadline(parts[0], parts[1]);
         taskList.addTask(newTask);
-        ui.showTaskAdded(newTask, taskList.getTaskCount());
+        ui.showTaskAdded(newTask, taskList.getTaskCount(), userName);
     }
 
     /**
@@ -231,10 +232,10 @@ public class Abs {
      * @throws AbsException If event creation fails
      */
     private void handleEvent(String input) throws AbsException {
-        String[] parts = Parser.parseEvent(input);
+        String[] parts = Parser.parseEvent(input, userName);
         Task newTask = new Event(parts[0], parts[1], parts[2]);
         taskList.addTask(newTask);
-        ui.showTaskAdded(newTask, taskList.getTaskCount());
+        ui.showTaskAdded(newTask, taskList.getTaskCount(), userName);
     }
 
     /**
@@ -244,8 +245,8 @@ public class Abs {
      * @throws AbsException If find fails
      */
     private void handleFind(String input) throws AbsException {
-        String keyword = Parser.parseFindKeyword(input);
-        ui.showFindResults(taskList.findTasks(keyword, "    "));
+        String keyword = Parser.parseFindKeyword(input, userName);
+        ui.showFindResults(taskList.findTasks(keyword, "    ", userName));
     }
 
     /**
@@ -255,11 +256,10 @@ public class Abs {
      * @throws AbsException If date parsing fails
      */
     private void handleDate(String input) throws AbsException {
-        java.time.LocalDate searchDate = Parser.parseDateCommand(input);
+        java.time.LocalDate searchDate = Parser.parseDateCommand(input, userName);
 
-        System.out.println("    Here are the tasks occurring on " +
+        System.out.println("    Okay " + userName + ", here are the tasks on " +
                 searchDate.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd yyyy")) + ":");
-
         int count = 0;
         for (int i = 0; i < taskList.getTaskCount(); i++) {
             Task task = taskList.getTask(i);

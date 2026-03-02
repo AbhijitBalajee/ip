@@ -105,12 +105,16 @@ public class TaskList {
      * @param indent Indentation string to use for formatting
      * @return Formatted string containing all tasks or empty message
      */
-    public String listTasks(String indent) {
+    public String listTasks(String indent, String userName) {
         if (isEmpty()) {
-            return indent + "There are no tasks in the list!";
+            return indent + "Your list is empty, " + userName + "! Nothing to do yet.";
         }
-
-        return buildTaskListString(indent);
+        StringBuilder result = new StringBuilder();
+        result.append(indent).append("Here are the tasks in your list, ").append(userName).append(":");
+        for (int i = 0; i < tasks.size(); i++) {
+            result.append("\n").append(indent).append(i + 1).append(".").append(tasks.get(i));
+        }
+        return result.toString();
     }
 
     /**
@@ -120,31 +124,21 @@ public class TaskList {
      * @param indent  Indentation string for formatting
      * @return Formatted string with matching tasks
      */
-    public String findTasks(String keyword, String indent) {
+    public String findTasks(String keyword, String indent, String userName) {
         StringBuilder result = new StringBuilder();
-        // Level 9 specific header
-        result.append(indent).append("Here are the matching tasks in your list:");
+        result.append(indent).append("Here are the matching tasks I found for you, ").append(userName).append(":");
 
         int matchCount = 0;
         String lowerKeyword = keyword.toLowerCase();
-
-        for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
-            // Case-insensitive check
+        for (Task task : tasks) {
             if (task.getDescription().toLowerCase().contains(lowerKeyword)) {
                 matchCount++;
-                result.append("\n")
-                        .append(indent)
-                        .append(matchCount) // Numbering based on matches, not original list index
-                        .append(".")
-                        .append(task);
+                result.append("\n").append(indent).append(matchCount).append(".").append(task);
             }
         }
-
         if (matchCount == 0) {
-            return indent + "I couldn't find any tasks matching '" + keyword + "'.";
+            return indent + "I couldn't find any tasks matching '" + keyword + "', " + userName + ".";
         }
-
         return result.toString();
     }
 

@@ -124,8 +124,8 @@ public class Ui {
      *
      * @param task Task that was marked
      */
-    public void showTaskMarkedAsDone(Task task) {
-        System.out.println(INDENT + "Nice! I've marked this task as done:");
+    public void showTaskMarkedAsDone(Task task, String userName) {
+        System.out.println(INDENT + "Nice job, " + userName + "! I've marked this task as done:");
         System.out.println(INDENT + "  " + task);
     }
 
@@ -134,8 +134,8 @@ public class Ui {
      *
      * @param task Task that was unmarked
      */
-    public void showTaskMarkedAsNotDone(Task task) {
-        System.out.println(INDENT + "OK, I've marked this task as not done yet:");
+    public void showTaskMarkedAsNotDone(Task task, String userName) {
+        System.out.println(INDENT + "OK " + userName + ", I've marked this task as not done yet:");
         System.out.println(INDENT + "  " + task);
     }
 
@@ -145,10 +145,10 @@ public class Ui {
      * @param task Task that was deleted
      * @param taskCount Remaining number of tasks
      */
-    public void showTaskDeleted(Task task, int taskCount) {
-        System.out.println(INDENT + "Noted. I've removed this task:");
+    public void showTaskDeleted(Task task, int taskCount, String userName) {
+        System.out.println(INDENT + "Noted, " + userName + ". I've removed this task:");
         System.out.println(INDENT + "  " + task);
-        System.out.println(INDENT + "Now you have " + taskCount + " tasks in the list.");
+        System.out.println(INDENT + "Now you have " + taskCount + " tasks remaining.");
     }
 
     /**
@@ -157,8 +157,8 @@ public class Ui {
      * @param task Task that was added
      * @param taskCount Total number of tasks
      */
-    public void showTaskAdded(Task task, int taskCount) {
-        System.out.println(INDENT + "Got it. I've added this task:");
+    public void showTaskAdded(Task task, int taskCount, String userName) {
+        System.out.println(INDENT + "Got it, " + userName + "! I've added this task:");
         System.out.println(INDENT + "  " + task);
         System.out.println(INDENT + "Now you have " + taskCount + " tasks in the list.");
     }
