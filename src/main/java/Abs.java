@@ -73,7 +73,7 @@ public class Abs {
      * Executes a command based on the command type.
      *
      * @param command Command type
-     * @param input Full user input
+     * @param input   Full user input
      * @return true if command is "bye", false otherwise
      * @throws AbsException If command execution fails
      */
@@ -109,6 +109,10 @@ public class Abs {
 
         case "event":
             handleEvent(input);
+            break;
+
+        case "date":
+            handleDate(input);
             break;
 
         case "find":
@@ -242,5 +246,44 @@ public class Abs {
     private void handleFind(String input) throws AbsException {
         String keyword = Parser.parseFindKeyword(input);
         ui.showFindResults(taskList.findTasks(keyword, "    "));
+    }
+
+    /**
+     * Handles the occur command to find tasks on a specific date.
+     *
+     * @param input Full user input
+     * @throws AbsException If date parsing fails
+     */
+    private void handleDate(String input) throws AbsException {
+        java.time.LocalDate searchDate = Parser.parseDateCommand(input);
+
+        System.out.println("    Here are the tasks occurring on " +
+                searchDate.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd yyyy")) + ":");
+
+        int count = 0;
+        for (int i = 0; i < taskList.getTaskCount(); i++) {
+            Task task = taskList.getTask(i);
+            boolean isMatch = false;
+
+            if (task instanceof Deadline) {
+                isMatch = ((Deadline) task).isOnDate(searchDate);
+            } else if (task instanceof Event) {
+                Event e = (Event) task;
+                if (e.getStartDateTime() != null && e.getEndDateTime() != null) {
+                    java.time.LocalDate start = e.getStartDateTime().toLocalDate();
+                    java.time.LocalDate end = e.getEndDateTime().toLocalDate();
+                    isMatch = !searchDate.isBefore(start) && !searchDate.isAfter(end);
+                }
+            }
+
+            if (isMatch) {
+                count++;
+                System.out.println("    " + count + "." + task);
+            }
+        }
+
+        if (count == 0) {
+            System.out.println("    Nothing scheduled for this date! Rest easy.");
+        }
     }
 }

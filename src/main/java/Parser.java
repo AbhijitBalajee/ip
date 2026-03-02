@@ -119,7 +119,7 @@ public class Parser {
      * Parses a task number from commands like mark, unmark, delete.
      * Handles both "mark 1" and "mark1" formats.
      *
-     * @param input Full user input
+     * @param input       Full user input
      * @param commandName Name of the command (for error messages)
      * @return Task number (1-indexed)
      * @throws AbsException If number is missing or invalid
@@ -164,5 +164,24 @@ public class Parser {
         }
 
         return words[1].trim();
+    }
+
+    /**
+     * Parses a date string for searching tasks on a specific date.
+     * * @param input Full user input (e.g., "occur 2019-12-02")
+     *
+     * @return LocalDate object
+     * @throws AbsException If date format is invalid or missing
+     */
+    public static java.time.LocalDate parseDateCommand(String input) throws AbsException {
+        String[] words = input.split("\\s+", 2);
+        if (words.length < 2) {
+            throw new AbsException("Please specify a date! Format: date yyyy-mm-dd");
+        }
+        try {
+            return java.time.LocalDate.parse(words[1].trim());
+        } catch (java.time.format.DateTimeParseException e) {
+            throw new AbsException("I don't recognize that date format. Please use yyyy-mm-dd (e.g., 2019-12-02).");
+        }
     }
 }
