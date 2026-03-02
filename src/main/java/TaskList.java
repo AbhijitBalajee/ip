@@ -114,29 +114,35 @@ public class TaskList {
     }
 
     /**
-     * Finds and returns all tasks containing the keyword.
+     * Finds and returns all tasks containing the keyword (case-insensitive).
      *
      * @param keyword Keyword to search for
-     * @param indent Indentation string for formatting
+     * @param indent  Indentation string for formatting
      * @return Formatted string with matching tasks
      */
     public String findTasks(String keyword, String indent) {
         StringBuilder result = new StringBuilder();
+        // Level 9 specific header
         result.append(indent).append("Here are the matching tasks in your list:");
 
         int matchCount = 0;
+        String lowerKeyword = keyword.toLowerCase();
+
         for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).getDescription().contains(keyword)) {
+            Task task = tasks.get(i);
+            // Case-insensitive check
+            if (task.getDescription().toLowerCase().contains(lowerKeyword)) {
+                matchCount++;
                 result.append("\n")
                         .append(indent)
-                        .append(++matchCount)
+                        .append(matchCount) // Numbering based on matches, not original list index
                         .append(".")
-                        .append(tasks.get(i));
+                        .append(task);
             }
         }
 
         if (matchCount == 0) {
-            return indent + "No matching tasks found!";
+            return indent + "I couldn't find any tasks matching '" + keyword + "'.";
         }
 
         return result.toString();
