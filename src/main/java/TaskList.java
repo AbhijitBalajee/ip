@@ -1,4 +1,6 @@
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Manages a collection of tasks using an ArrayList.
@@ -54,7 +56,7 @@ public class TaskList {
     }
 
     /**
-     * Marks a task and saves to storage.
+     * Marks a task as done and saves to storage.
      *
      * @param task Task to mark as done
      */
@@ -64,7 +66,7 @@ public class TaskList {
     }
 
     /**
-     * Unmarks a task and saves to storage.
+     * Marks a task as not done and saves to storage.
      *
      * @param task Task to mark as not done
      */
@@ -101,9 +103,27 @@ public class TaskList {
     }
 
     /**
+     * Returns all tasks that occur on the specified date.
+     * Includes Deadlines due on that date and Events spanning that date.
+     *
+     * @param date The date to search for
+     * @return List of tasks occurring on the given date
+     */
+    public List<Task> getTasksOnDate(LocalDate date) {
+        List<Task> matchingTasks = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.occursOnDate(date)) {
+                matchingTasks.add(task);
+            }
+        }
+        return matchingTasks;
+    }
+
+    /**
      * Returns a formatted string of all tasks in the list.
      *
-     * @param indent Indentation string to use for formatting
+     * @param indent   Indentation string to use for formatting
+     * @param userName User's name for personalized messages
      * @return Formatted string containing all tasks or empty message
      */
     public String listTasks(String indent, String userName) {
@@ -121,8 +141,9 @@ public class TaskList {
     /**
      * Finds and returns all tasks containing the keyword (case-insensitive).
      *
-     * @param keyword Keyword to search for
-     * @param indent  Indentation string for formatting
+     * @param keyword  Keyword to search for
+     * @param indent   Indentation string for formatting
+     * @param userName User's name for personalized messages
      * @return Formatted string with matching tasks
      */
     public String findTasks(String keyword, String indent, String userName) {

@@ -3,6 +3,10 @@
  */
 public class Parser {
 
+    private static final int TODO_PREFIX_LENGTH = 5;
+    private static final int DEADLINE_PREFIX_LENGTH = 9;
+    private static final int EVENT_PREFIX_LENGTH = 6;
+
     /**
      * Parses the user input and returns the command type.
      *
@@ -11,37 +15,37 @@ public class Parser {
      */
     public static String getCommand(String input) {
         String[] words = input.split("\\s+", 2);
-        return words[0].toLowerCase().replaceAll("\\d+.*", "");
+        return words[0].toLowerCase();
     }
 
     /**
      * Extracts the description from a todo command.
      *
-     * @param input Full user input
+     * @param input    Full user input
+     * @param userName User's name for personalized error messages
      * @return Task description
      * @throws AbsException If description is missing
      */
     public static String parseTodo(String input, String userName) throws AbsException {
-        int todoLength = 5;
-        if (input.length() <= todoLength || input.substring(todoLength).trim().isEmpty()) {
+        if (input.length() <= TODO_PREFIX_LENGTH || input.substring(TODO_PREFIX_LENGTH).trim().isEmpty()) {
             throw new AbsException("Did you forget, " + userName + "? Remember to put an activity after todo!");
         }
-        return input.substring(todoLength).trim();
+        return input.substring(TODO_PREFIX_LENGTH).trim();
     }
 
     /**
      * Parses a deadline command and returns [description, deadline].
      *
-     * @param input Full user input
+     * @param input    Full user input
+     * @param userName User's name for personalized error messages
      * @return Array with [description, deadline]
      * @throws AbsException If format is invalid
      */
     public static String[] parseDeadline(String input, String userName) throws AbsException {
-        int deadlineLength = 9;
-        if (input.length() <= deadlineLength || input.substring(deadlineLength).trim().isEmpty()) {
+        if (input.length() <= DEADLINE_PREFIX_LENGTH || input.substring(DEADLINE_PREFIX_LENGTH).trim().isEmpty()) {
             throw new AbsException("I need an activity, " + userName + "! Try: deadline <task> /by <time>");
         }
-        String taskDetails = input.substring(deadlineLength).trim();
+        String taskDetails = input.substring(DEADLINE_PREFIX_LENGTH).trim();
         if (!taskDetails.contains(" /by ")) {
             throw new AbsException("Don't forget the /by, " + userName + "! I need to know when it's due.");
         }
@@ -52,20 +56,17 @@ public class Parser {
     /**
      * Parses an event command and returns [description, start, end].
      *
-     * @param input Full user input
+     * @param input    Full user input
+     * @param userName User's name for personalized error messages
      * @return Array with [description, start, end]
      * @throws AbsException If format is invalid
      */
     public static String[] parseEvent(String input, String userName) throws AbsException {
-        int eventLength = 6;
-        if (input.length() <= eventLength || input.substring(eventLength).trim().isEmpty()) {
+        if (input.length() <= EVENT_PREFIX_LENGTH || input.substring(EVENT_PREFIX_LENGTH).trim().isEmpty()) {
             throw new AbsException("Did you forget, " + userName + "? Remember to put an activity after event!");
         }
 
-        String taskDetails = input.substring(eventLength).trim();
-        if (taskDetails.isEmpty()) {
-            throw new AbsException("Did you forget? Remember to put an activity after event!");
-        }
+        String taskDetails = input.substring(EVENT_PREFIX_LENGTH).trim();
 
         if (!taskDetails.contains(" /from ") || !taskDetails.contains(" /to ")) {
             throw new AbsException("Don't forget to use /from and /to to specify the event timing!\n"
@@ -99,10 +100,10 @@ public class Parser {
 
     /**
      * Parses a task number from commands like mark, unmark, delete.
-     * Handles both "mark 1" and "mark1" formats.
      *
      * @param input       Full user input
      * @param commandName Name of the command (for error messages)
+     * @param userName    User's name for personalized error messages
      * @return Task number (1-indexed)
      * @throws AbsException If number is missing or invalid
      */
@@ -127,7 +128,8 @@ public class Parser {
     /**
      * Parses a find keyword.
      *
-     * @param input Full user input
+     * @param input    Full user input
+     * @param userName User's name for personalized error messages
      * @return Search keyword
      * @throws AbsException If keyword is missing
      */
@@ -142,7 +144,7 @@ public class Parser {
     /**
      * Parses a date string for searching tasks on a specific date.
      *
-     * @param input Full user input (e.g., "occur 2019-12-02")
+     * @param input    Full user input (e.g., "date 2026-12-01")
      * @param userName User's name for personalized error messages
      * @return LocalDate object
      * @throws AbsException If date format is invalid or missing

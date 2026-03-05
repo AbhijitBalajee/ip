@@ -1,4 +1,6 @@
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Main chatbot application that manages a task list.
@@ -152,7 +154,7 @@ public class Abs {
         }
 
         Task task = taskList.getTask(taskNumber - 1);
-        if (task.isCompleted()) {                                                          // ADD THIS
+        if (task.isCompleted()) {
             throw new AbsException("Task " + taskNumber + " is already done, " + userName + "!");
         }
 
@@ -178,13 +180,12 @@ public class Abs {
         }
 
         Task task = taskList.getTask(taskNumber - 1);
-        if (!task.isCompleted()) {                                                          // ADD THIS
+        if (!task.isCompleted()) {
             throw new AbsException("Task " + taskNumber + " is not marked yet, " + userName + "!");
         }
 
         taskList.markTaskAsNotDone(task);
         ui.showTaskMarkedAsNotDone(task, userName);
-
     }
 
     /**
@@ -259,30 +260,14 @@ public class Abs {
     }
 
     /**
-     * Handles the occur command to find tasks on a specific date.
+     * Handles the date command to find tasks occurring on a specific date.
      *
      * @param input Full user input
      * @throws AbsException If date parsing fails
      */
     private void handleDate(String input) throws AbsException {
-        java.time.LocalDate searchDate = Parser.parseDateCommand(input, userName);
-        java.util.List<Task> matchingTasks = new java.util.ArrayList<>();
-
-        for (int i = 0; i < taskList.getTaskCount(); i++) {
-            Task task = taskList.getTask(i);
-            if (task instanceof Deadline && ((Deadline) task).isOnDate(searchDate)) {
-                matchingTasks.add(task);
-            } else if (task instanceof Event) {
-                Event event = (Event) task;
-                if (event.getStartDateTime() != null && event.getEndDateTime() != null) {
-                    java.time.LocalDate start = event.getStartDateTime().toLocalDate();
-                    java.time.LocalDate end = event.getEndDateTime().toLocalDate();
-                    if (!searchDate.isBefore(start) && !searchDate.isAfter(end)) {
-                        matchingTasks.add(task);
-                    }
-                }
-            }
-        }
+        LocalDate searchDate = Parser.parseDateCommand(input, userName);
+        List<Task> matchingTasks = taskList.getTasksOnDate(searchDate);
         ui.showDateResults(userName, searchDate, matchingTasks);
     }
 }
