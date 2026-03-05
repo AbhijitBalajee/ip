@@ -16,10 +16,10 @@ public class Deadline extends Task {
 
     /**
      * Constructs a Deadline task.
-     * Attempts to parse the deadline as a date in yyyy-mm-dd format.
+     * Attempts to parse the deadline as a date in yyyy-MM-dd format.
      *
      * @param description Task description
-     * @param deadline Deadline (either "yyyy-mm-dd" or natural language)
+     * @param deadline    Deadline (either "yyyy-MM-dd" or natural language)
      */
     public Deadline(String description, String deadline) {
         super(description);
@@ -37,7 +37,7 @@ public class Deadline extends Task {
      * Constructs a Deadline task with a pre-parsed date.
      * Used when loading from storage.
      *
-     * @param description Task description
+     * @param description  Task description
      * @param deadlineDate Deadline as LocalDate
      */
     public Deadline(String description, LocalDate deadlineDate) {
@@ -48,9 +48,9 @@ public class Deadline extends Task {
     }
 
     /**
-     * Returns the deadline time as a formatted string.
+     * Returns the deadline time as a formatted string for storage.
      *
-     * @return Deadline time string (for storage)
+     * @return Deadline time string
      */
     public String getDeadlineTime() {
         if (hasValidDate) {
@@ -69,12 +69,13 @@ public class Deadline extends Task {
     }
 
     /**
-     * Checks if the deadline is on a specific date.
+     * Checks whether this deadline falls on the given date.
      *
-     * @param date Date to check against
-     * @return true if deadline is on the specified date
+     * @param date The date to check against
+     * @return true if the deadline is on the specified date
      */
-    public boolean isOnDate(LocalDate date) {
+    @Override
+    public boolean occursOnDate(LocalDate date) {
         return hasValidDate && deadlineDate.equals(date);
     }
 
@@ -88,7 +89,6 @@ public class Deadline extends Task {
     public String toString() {
         String deadlineDisplay;
         if (hasValidDate) {
-            // Format as "MMM dd yyyy" (e.g., "Dec 02 2019")
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd yyyy");
             deadlineDisplay = deadlineDate.format(formatter);
         } else {

@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -20,11 +21,11 @@ public class Event extends Task {
 
     /**
      * Constructs an Event task.
-     * Attempts to parse times as LocalDateTime in yyyy-mm-dd HHmm format.
+     * Attempts to parse times as LocalDateTime in "yyyy-MM-dd HHmm" format.
      *
      * @param description Task description
-     * @param start Start time (either "yyyy-mm-dd HHmm" or natural language)
-     * @param end End time (either "yyyy-mm-dd HHmm" or natural language)
+     * @param start       Start time (either "yyyy-MM-dd HHmm" or natural language)
+     * @param end         End time (either "yyyy-MM-dd HHmm" or natural language)
      */
     public Event(String description, String start, String end) {
         super(description);
@@ -45,9 +46,9 @@ public class Event extends Task {
      * Constructs an Event task with pre-parsed datetimes.
      * Used when loading from storage.
      *
-     * @param description Task description
+     * @param description   Task description
      * @param startDateTime Start as LocalDateTime
-     * @param endDateTime End as LocalDateTime
+     * @param endDateTime   End as LocalDateTime
      */
     public Event(String description, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         super(description);
@@ -61,9 +62,9 @@ public class Event extends Task {
     }
 
     /**
-     * Returns the start time as a string.
+     * Returns the start time as a string for storage.
      *
-     * @return Start time string (for storage)
+     * @return Start time string
      */
     public String getStartTime() {
         if (hasValidDateTime) {
@@ -74,9 +75,9 @@ public class Event extends Task {
     }
 
     /**
-     * Returns the end time as a string.
+     * Returns the end time as a string for storage.
      *
-     * @return End time string (for storage)
+     * @return End time string
      */
     public String getEndTime() {
         if (hasValidDateTime) {
@@ -102,6 +103,23 @@ public class Event extends Task {
      */
     public LocalDateTime getEndDateTime() {
         return endDateTime;
+    }
+
+    /**
+     * Checks whether this event spans the given date.
+     * Returns true if the date falls on or between the start and end dates.
+     *
+     * @param date The date to check against
+     * @return true if the event occurs on the given date
+     */
+    @Override
+    public boolean occursOnDate(LocalDate date) {
+        if (!hasValidDateTime) {
+            return false;
+        }
+        LocalDate start = startDateTime.toLocalDate();
+        LocalDate end = endDateTime.toLocalDate();
+        return !date.isBefore(start) && !date.isAfter(end);
     }
 
     /**

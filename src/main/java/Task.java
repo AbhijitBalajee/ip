@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+
 /**
  * Represents a generic task with a description and completion status.
  */
@@ -57,6 +59,18 @@ public class Task {
      */
     public boolean isCompleted() {
         return isDone;
+    }
+
+    /**
+     * Checks whether this task occurs on the given date.
+     * Base implementation always returns false.
+     * Subclasses with time information should override this.
+     *
+     * @param date The date to check against
+     * @return true if the task occurs on the given date, false otherwise
+     */
+    public boolean occursOnDate(LocalDate date) {
+        return false;
     }
 
     /**
