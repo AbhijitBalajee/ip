@@ -1,30 +1,110 @@
-# Duke User Guide
+# Abs - Task Manager Chatbot
 
-// Update the title above to match the actual product name
+Abs is a personal task management chatbot that runs in your terminal.
+It helps you track todos, deadlines, and events, and saves your tasks automatically.
 
-// Product screenshot goes here
+## Features
 
-// Product intro goes here
+- Add todos, deadlines, and events
+- Mark and unmark tasks as done
+- Delete tasks
+- Find tasks by keyword
+- View tasks on a specific date
+- Auto-saves all tasks to disk
 
-## Adding deadlines
+## Setting Up
 
-// Describe the action and its outcome.
-
-// Give examples of usage
-
-Example: `keyword (optional arguments)`
-
-// A description of the expected outcome goes here
-
+1. Ensure you have Java 11 or later installed
+2. Download the latest `abs.jar` from the releases page
+3. Run the following command in your terminal:
 ```
-expected output
+java -jar abs.jar
 ```
 
-## Feature ABC
+## Usage
 
-// Feature details
+When you start Abs, it will ask for your name and greet you personally.
+Type any of the commands below to manage your tasks.
 
+### Adding Tasks
 
-## Feature XYZ
+**Todo** — a task with no time constraint
+```
+todo <description>
+```
+Example: `todo read book`
 
-// Feature details
+**Deadline** — a task with a due date
+```
+deadline <description> /by <date>
+```
+Example: `deadline submit report /by 2026-12-01`
+
+**Event** — a task with a start and end time
+```
+event <description> /from <start> /to <end>
+```
+Example: `event project meeting /from 2026-12-01 0900 /to 2026-12-01 1100`
+
+> [!NOTE]
+> Dates should be in `yyyy-MM-dd` format for deadlines and `yyyy-MM-dd HHmm` for events.
+> Natural language like `next friday` is also accepted but won't support date search.
+
+### Viewing Tasks
+
+**List all tasks**
+```
+list
+```
+
+**Find tasks by keyword**
+```
+find <keyword>
+```
+Example: `find book`
+
+**View tasks on a specific date**
+```
+date <date>
+```
+Example: `date 2026-12-01`
+
+### Managing Tasks
+
+**Mark a task as done**
+```
+mark <task number>
+```
+Example: `mark 1`
+
+**Unmark a task**
+```
+unmark <task number>
+```
+Example: `unmark 1`
+
+**Delete a task**
+```
+delete <task number>
+```
+Example: `delete 1`
+
+### Exiting
+```
+bye
+```
+
+## Command Summary
+
+| Command | Format | Example |
+|---|---|---|
+| Todo | `todo <desc>` | `todo read book` |
+| Deadline | `deadline <desc> /by <date>` | `deadline report /by 2026-12-01` |
+| Event | `event <desc> /from <start> /to <end>` | `event meeting /from 2026-12-01 0900 /to 2026-12-01 1100` |
+| List | `list` | `list` |
+| Mark | `mark <number>` | `mark 1` |
+| Unmark | `unmark <number>` | `unmark 1` |
+| Delete | `delete <number>` | `delete 1` |
+| Find | `find <keyword>` | `find book` |
+| Date | `date <date>` | `date 2026-12-01` |
+| Bye | `bye` | `bye` |
