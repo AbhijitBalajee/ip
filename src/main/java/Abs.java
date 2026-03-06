@@ -3,7 +3,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Main chatbot application that manages a task list.
+ * Main chatbot application (Abs) that manages a task list.
  * Coordinates between Ui, Storage, TaskList, and Parser.
  */
 public class Abs {
