@@ -3,13 +3,29 @@
 Abs is a personal task management chatbot that runs in your terminal.
 It helps you track todos, deadlines, and events, and saves your tasks automatically.
 
+When started, Abs greets you with:
+
+```
+    -------------------------------------------
+      █████╗ ██████╗ ███████╗
+     ██╔══██╗██╔══██╗██╔════╝
+     ███████║██████╔╝███████╗
+     ██╔══██║██╔══██╗╚════██║
+     ██║  ██║██████╔╝███████║
+     ╚═╝  ╚═╝╚═════╝ ╚══════╝
+
+    Hellooo! I'm Abs!
+    What is your name?
+    -------------------------------------------
+```
+
 ## Features
 
-- Add todos, deadlines, and events
-- Mark and unmark tasks as done
-- Delete tasks
-- Find tasks by keyword
-- View tasks on a specific date
+- **Add** todos, deadlines, and events
+- **Mark** and unmark tasks as done
+- **Delete** tasks
+- **Find** tasks by keyword
+- **View** tasks on a specific date
 - Auto-saves all tasks to disk
 
 ## Setting Up
@@ -17,6 +33,7 @@ It helps you track todos, deadlines, and events, and saves your tasks automatica
 1. Ensure you have Java 11 or later installed
 2. Download the latest `abs.jar` from the releases page
 3. Run the following command in your terminal:
+
 ```
 java -jar abs.jar
 ```
