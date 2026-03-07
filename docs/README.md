@@ -43,6 +43,9 @@ java -jar abs.jar
 When you start Abs, it will ask for your name and greet you personally.
 Type any of the commands below to manage your tasks.
 
+[!TIP]
+All commands are case-insensitive. For example, BYE, Bye, and bye all work the same way.
+
 ### Adding Tasks
 
 **Todo** — a task with no time constraint
